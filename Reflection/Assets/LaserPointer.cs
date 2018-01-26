@@ -27,23 +27,37 @@ public class LaserPointer : MonoBehaviour {
     }
 
     private void drawLaser(Vector2 firePosition, Vector2 fireDirection) {
-        int laserVertexCount = 2;
+        int laserVertexCount = 1;
         Vector3[] positions = new Vector3[maxReflecCount];
         positions[0] = firePosition;
 
         if (Physics2D.Raycast(firePosition, fireDirection)) {
             RaycastHit2D hit = Physics2D.Raycast(firePosition, fireDirection);
-            positions[1] = new Vector3(hit.point.x, hit.point.y,
+            if(hit.collider.gameObject.tag == StaticVar.BLOCK_TAG_REFLECTIVE) {
+                positions[laserVertexCount] = new Vector3(hit.point.x, hit.point.y,
                                    firePositionObject.transform.position.z);
+                laserVertexCount++;
+
+                Vector2 reflectDirection = Vector2.Reflect(firePosition, hit.normal);
+                positions[laserVertexCount] = new Vector3(hit.point.x + (reflectDirection.x * lineLength),
+                                       hit.point.y + (reflectDirection.y * lineLength),
+                                       firePositionObject.transform.position.z);
+                laserVertexCount++;
+            }
+            else {
+                positions[laserVertexCount] = new Vector3(hit.point.x, hit.point.y,
+                                       firePositionObject.transform.position.z);
+                laserVertexCount++;
+            }
         }
         else {
-            positions[1] = new Vector3(firePosition.x + (fireDirection.x * lineLength),
+            positions[laserVertexCount] = new Vector3(firePosition.x + (fireDirection.x * lineLength),
                                    firePosition.y + (fireDirection.y * lineLength),
                                    firePositionObject.transform.position.z);
+            laserVertexCount++;
         }
 
-        lineRenderer.positionCount = positions.Length; //change later
+        lineRenderer.positionCount = laserVertexCount;
         lineRenderer.SetPositions(positions);
-
     }
 }
