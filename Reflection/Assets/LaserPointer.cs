@@ -24,88 +24,73 @@ public class LaserPointer : MonoBehaviour {
         float yFireVector = Mathf.Sin(fireAngle / 180f * Mathf.PI);
         Vector2 fireDirection = new Vector2(xFireVector, yFireVector);
 
-        drawLaser(firePosition, fireDirection);
+        DrawLaser(firePosition, fireDirection);
     }
 
-    private void drawLaser(Vector2 firePosition, Vector2 fireDirection) {
-        int laserVertexCount = 1;
-        Vector3[] positions = new Vector3[maxReflectCount];
-        positions[0] = firePosition;
+    private void DrawLaser (Vector2 firePosition, Vector2 fireDirection) {
+        ResetLineTenderer();
+        AddPositionToLineRenderer(firePosition);
         bool isLineEnd = false;
         lastHitObject = null;
 
         Vector2 currentPosition = new Vector2(firePosition.x, firePosition.y);
         Vector2 currentDirection = new Vector2(fireDirection.x, fireDirection.y);
 
-        RaycastHit2D hit = Physics2D.Raycast(currentPosition, currentDirection);
+        RaycastHit2D objectHitData = Physics2D.Raycast(currentPosition, currentDirection, lineLength, 1 << StaticVar.LAYER_BLOCK);
 
-        while (hit && laserVertexCount < maxReflectCount) {
-            lastHitObject = hit.collider.gameObject;
-            
+        while (objectHitData && lineRenderer.positionCount <= maxReflectCount) {
+            DetectEnemy(currentPosition, currentDirection, objectHitData.distance);
+            lastHitObject = objectHitData.collider.gameObject;
 
-            positions[laserVertexCount] = new Vector3(hit.point.x, hit.point.y,
-                                   firePositionObject.transform.position.z);
-            laserVertexCount++;
+            AddPositionToLineRenderer(new Vector3(objectHitData.point.x, objectHitData.point.y,
+                                   firePositionObject.transform.position.z));
 
-            if (hit.collider.gameObject.tag == StaticVar.BLOCK_TAG_REFLECTIVE) {
-                Vector2 reflectDirection = Vector2.Reflect(currentDirection, hit.normal);
-                print(hit.collider.gameObject.ToString() + " " + reflectDirection.ToString());
+            if (objectHitData.collider.gameObject.tag == StaticVar.BLOCK_TAG_REFLECTIVE) {
+                Vector2 reflectDirection = Vector2.Reflect(currentDirection, objectHitData.normal);
+                //print(objectHit.collider.gameObject.ToString() + " " + reflectDirection.ToString());
 
-                currentPosition = new Vector2(hit.point.x, hit.point.y);
+                currentPosition = new Vector2(objectHitData.point.x, objectHitData.point.y);
                 currentDirection = reflectDirection;
             }
             else {
                 isLineEnd = true;
                 break;
             }
-            lastHitObject.GetComponent<Collider2D>().enabled = false;
-            hit = Physics2D.Raycast(currentPosition, currentDirection);
-            lastHitObject.GetComponent<Collider2D>().enabled = true;
 
+            lastHitObject.GetComponent<Collider2D>().enabled = false;
+            objectHitData = Physics2D.Raycast(currentPosition, currentDirection, lineLength, 1 << StaticVar.LAYER_BLOCK);
+            lastHitObject.GetComponent<Collider2D>().enabled = true;
         }
 
         if (!isLineEnd) {
-            positions[laserVertexCount] = new Vector3(currentPosition.x + (currentDirection.x * lineLength),
+            DetectEnemy(currentPosition, currentDirection, lineLength);
+            AddPositionToLineRenderer(new Vector3(currentPosition.x + (currentDirection.x * lineLength),
                                        currentPosition.y + (currentDirection.y * lineLength),
-                                       firePositionObject.transform.position.z);
-            laserVertexCount++;
+                                       firePositionObject.transform.position.z));
         }
+    }
 
-        lineRenderer.positionCount = laserVertexCount;
-        lineRenderer.SetPositions(positions);
+    private void AddPositionToLineRenderer(Vector3 position) {
+        lineRenderer.positionCount += 1;
+        lineRenderer.SetPosition(lineRenderer.positionCount - 1, position);
+    }
 
+    private void ResetLineTenderer () {
+        lineRenderer.positionCount = 0;
+    }
 
-        /*int laserVertexCount = 1;
-        Vector3[] positions = new Vector3[maxReflecCount];
-        positions[0] = firePosition;
+    private void DetectEnemy (Vector2 position, Vector2 direction, float range) {
+        GameObject lastEnemyHit = null;
+        RaycastHit2D enemyHitData = Physics2D.Raycast(position, direction, range, 1 << StaticVar.LAYER_ENEMY);
 
-        if (Physics2D.Raycast(firePosition, fireDirection)) {
-            RaycastHit2D hit = Physics2D.Raycast(firePosition, fireDirection);
-            if(hit.collider.gameObject.tag == StaticVar.BLOCK_TAG_REFLECTIVE) {
-                positions[laserVertexCount] = new Vector3(hit.point.x, hit.point.y,
-                                   firePositionObject.transform.position.z);
-                laserVertexCount++;
+        while (enemyHitData) {
+            lastEnemyHit = enemyHitData.collider.gameObject;
+            print(lastEnemyHit.ToString());
+            range -= enemyHitData.distance;
 
-                Vector2 reflectDirection = Vector2.Reflect(firePosition, hit.normal);
-                positions[laserVertexCount] = new Vector3(hit.point.x + (reflectDirection.x * lineLength),
-                                       hit.point.y + (reflectDirection.y * lineLength),
-                                       firePositionObject.transform.position.z);
-                laserVertexCount++;
-            }
-            else {
-                positions[laserVertexCount] = new Vector3(hit.point.x, hit.point.y,
-                                       firePositionObject.transform.position.z);
-                laserVertexCount++;
-            }
+            lastEnemyHit.GetComponent<Collider2D>().enabled = false;
+            enemyHitData = Physics2D.Raycast(enemyHitData.point, direction, range, 1 << StaticVar.LAYER_ENEMY);
+            lastEnemyHit.GetComponent<Collider2D>().enabled = true;
         }
-        else {
-            positions[laserVertexCount] = new Vector3(firePosition.x + (fireDirection.x * lineLength),
-                                   firePosition.y + (fireDirection.y * lineLength),
-                                   firePositionObject.transform.position.z);
-            laserVertexCount++;
-        }
-
-        lineRenderer.positionCount = laserVertexCount;
-        lineRenderer.SetPositions(positions);*/
     }
 }
