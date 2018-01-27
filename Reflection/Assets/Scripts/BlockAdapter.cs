@@ -49,4 +49,12 @@ public class BlockAdapter : MonoBehaviour {
     public void NotHitByAttack () {
         attackActive = false;
     }
+
+    public bool IsLaserActive () {
+        return laserActive;
+    }
+
+    public bool IsAttackActive () {
+        return attackActive;
+    }
 }

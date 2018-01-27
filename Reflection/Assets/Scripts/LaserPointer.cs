@@ -17,15 +17,7 @@ public class LaserPointer : MonoBehaviour {
 
     private float lastFireTime = 0.0f;
     private bool isFiring = false;
-    private GameObject oldHitObject;
-
-
     private LineRenderer lineRenderer;
-
-    public LaserPointer (GameObject firePositionObject, LineRenderer lineRenderer) {
-        this.firePositionObject = firePositionObject;
-        this.lineRenderer = lineRenderer;
-    }
 
     // Use this for initialization
     void Start () {
@@ -85,27 +77,25 @@ public class LaserPointer : MonoBehaviour {
         Vector2 currentDirection = new Vector2(fireDirection.x, fireDirection.y);
 
         RaycastHit2D objectHitData = Physics2D.Raycast(currentPosition, currentDirection, lineLength, 1 << StaticVar.LAYER_BLOCK);
-        if (!objectHitData) {
-            lastHitObject = null;
+
+        foreach(BlockAdapter gameObject in GameObject.FindObjectsOfType<BlockAdapter>()) {
+            gameObject.NotHitbyLaser();
         }
 
         while (objectHitData && lineRenderer.positionCount <= maxReflectCount && !isLineEnd) {
             lastHitObject = objectHitData.collider.gameObject;
-            if(oldHitObject != lastHitObject) {
-                if (oldHitObject) {
-                    BlockAdapter oldBlockAdapter = oldHitObject.GetComponent<BlockAdapter>();
-                    if (oldBlockAdapter) oldBlockAdapter.NotHitbyLaser();
-                }
-            }
 
             BlockAdapter blockAdapter = lastHitObject.GetComponent<BlockAdapter>();
             if (blockAdapter) {
+                foreach(BlockAdapter ba in GameObject.FindObjectsOfType<BlockAdapter>()) {
+                    ba.NotHitbyLaser();
+                }
                 blockAdapter.HitByLaser();
             }
 
             AddPositionToLineRenderer(new Vector3(objectHitData.point.x, objectHitData.point.y));
 
-            if (objectHitData.collider.gameObject.tag == StaticVar.BLOCK_TAG_REFLECTIVE) {
+            if (objectHitData.collider.gameObject.tag == StaticVar.BLOCK_TAG_REFLECTIVE && isMainLaser) {
                 Vector2 reflectDirection = Vector2.Reflect(currentDirection, objectHitData.normal);
                 //print(objectHit.collider.gameObject.ToString() + " " + reflectDirection.ToString());
 
@@ -117,21 +107,11 @@ public class LaserPointer : MonoBehaviour {
                 break;
             }
 
-            oldHitObject = lastHitObject;
-
             //lastHitObject.GetComponent<Collider2D>().enabled = false;
             objectHitData = Physics2D.Raycast(currentPosition + objectHitData.normal * 0.01f, currentDirection, lineLength, 1 << StaticVar.LAYER_BLOCK);
             //lastHitObject.GetComponent<Collider2D>().enabled = true;
 
         }
-
-        if (oldHitObject != lastHitObject) {
-            if (oldHitObject) {
-                BlockAdapter oldBlockAdapter = oldHitObject.GetComponent<BlockAdapter>();
-                if (oldBlockAdapter) oldBlockAdapter.NotHitbyLaser();
-            }
-        }
-        oldHitObject = lastHitObject;
 
         if (!isLineEnd) {
             AddPositionToLineRenderer(new Vector3(currentPosition.x + (currentDirection.x * lineLength),
