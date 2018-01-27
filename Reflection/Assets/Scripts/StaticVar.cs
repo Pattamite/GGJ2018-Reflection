@@ -11,5 +11,5 @@ public class StaticVar : MonoBehaviour {
     public static int LAYER_ENEMY = 8;
     public static float ATTACK_DELAY = 0.5f;
     public static string UI_MENU_PAUSE = "PauseMenu";
-
+    public static string UI_MENU_GAMEOVER = "GameOverMenu";
 }

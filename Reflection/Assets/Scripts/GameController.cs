@@ -16,8 +16,10 @@ public class GameController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        TogglePauseByKey();
-        CheckEnemyCount();
+        if (!uiController.isMenu) {
+            TogglePauseByKey();
+            CheckEnemyCount();
+        }
     }
 
     private void CheckEnemyCount () {
@@ -49,6 +51,12 @@ public class GameController : MonoBehaviour {
     }
 
     public void GameOver () {
-        print("Game Over");
+        uiController.ActivateUI(StaticVar.UI_MENU_GAMEOVER);
+        Time.timeScale = 0;
+    }
+
+    public void LoadLevel (int sceneNumber) {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(sceneNumber);
     }
 }

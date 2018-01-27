@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UIController : MonoBehaviour {
+    public bool isMenu = false;
     [Header("Player HP")]
     public Text playerHPText;
     [Header("Player Energy")]
@@ -15,6 +16,7 @@ public class UIController : MonoBehaviour {
     public Text enemyCount;
     [Header("Menu GameObject")]
     public GameObject pauseMenu;
+    public GameObject gameOverMenu;
 
     private Player player;
     private GameController gameController;
@@ -22,15 +24,18 @@ public class UIController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        player = GameObject.FindObjectOfType<Player>();
-        gameController = GameObject.FindObjectOfType<GameController>();
-
+        if (!isMenu) {
+            player = GameObject.FindObjectOfType<Player>();
+            gameController = GameObject.FindObjectOfType<GameController>();
+        }
     }
 	
 	// Update is called once per frame
 	void Update () {
-        UpdatePlayerInfo();
-        UpdateOthersInfo();
+        if (!isMenu) {
+            UpdatePlayerInfo();
+            UpdateOthersInfo();
+        }
 	}
 
     private void UpdatePlayerInfo () {
@@ -51,14 +56,20 @@ public class UIController : MonoBehaviour {
 
     public void ActivateUI (string menuName) {
         if(menuName == StaticVar.UI_MENU_PAUSE) {
-            pauseMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 0, -1);
+            pauseMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 0, -10);
         }
-        
+        else if (menuName == StaticVar.UI_MENU_GAMEOVER) {
+            gameOverMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 0, -10);
+        }
+
     }
 
     public void DeactivateUI (string menuName) {
         if (menuName == StaticVar.UI_MENU_PAUSE) {
-            pauseMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -20, -1);
+            pauseMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -20, -10);
+        }
+        else if (menuName == StaticVar.UI_MENU_GAMEOVER) {
+            gameOverMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -20, -10);
         }
     }
 }
