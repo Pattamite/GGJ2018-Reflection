@@ -6,6 +6,7 @@ public class BlockAdapter : MonoBehaviour {
     MultiLaserBlock multiLaserBlock;
     private bool laserActive;
     private bool attackActive;
+    public bool isPreview;
 
 	// Use this for initialization
 	void Start () {
@@ -16,7 +17,7 @@ public class BlockAdapter : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        ActivateLaser();
+        if(isPreview) ActivateLaser();
         ActivateAttack();
     }
 
