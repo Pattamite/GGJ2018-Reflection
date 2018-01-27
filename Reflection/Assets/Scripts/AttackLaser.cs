@@ -60,7 +60,6 @@ public class AttackLaser : MonoBehaviour {
     }
 
     private void DrawLaser () {
-        print(lineRenderer);
         ResetLineRenderer();
         AddPositionToLineRenderer(firePosition);
         bool isLineEnd = false;
@@ -119,7 +118,6 @@ public class AttackLaser : MonoBehaviour {
 
         while (enemyHitData) {
             lastEnemyHit = enemyHitData.collider.gameObject;
-            print(lastEnemyHit.ToString());
             range -= enemyHitData.distance;
 
             lastEnemyHit.GetComponent<Collider2D>().enabled = false;

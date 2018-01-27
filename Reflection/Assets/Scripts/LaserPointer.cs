@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(LineRenderer))]
 public class LaserPointer : MonoBehaviour {
 
-    public GameObject AttackLaser;
+    public GameObject attackLaser;
     public GameObject firePositionObject;
     public float lineLength = 100;
     public int maxReflectCount = 100;
@@ -79,7 +79,7 @@ public class LaserPointer : MonoBehaviour {
             float yFireVector = Mathf.Sin(fireAngle / 180f * Mathf.PI);
             Vector2 fireDirection = new Vector2(xFireVector, yFireVector);
 
-            GameObject newAttack = Instantiate(AttackLaser);
+            GameObject newAttack = Instantiate(attackLaser);
             newAttack.GetComponent<AttackLaser>().Attack(firePosition, fireDirection);
         }
     }
@@ -98,8 +98,8 @@ public class LaserPointer : MonoBehaviour {
         while (objectHitData && lineRenderer.positionCount <= maxReflectCount) {
             lastHitObject = objectHitData.collider.gameObject;
 
-            BlockAdapter blockAdapter = lastHitObject.GetComponent<BlockAdapter>();
-            if(blockAdapter) blockAdapter.HitByLaser();
+            //BlockAdapter blockAdapter = lastHitObject.GetComponent<BlockAdapter>();
+            //if(blockAdapter) blockAdapter.HitByLaser();
 
             AddPositionToLineRenderer(new Vector3(objectHitData.point.x, objectHitData.point.y));
 

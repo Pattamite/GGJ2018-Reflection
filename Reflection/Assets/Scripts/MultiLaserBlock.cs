@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MultiLaserBlock : MonoBehaviour {
+    public GameObject attackLaser;
     public int laserCount;
     public GameObject[] firePositionObject;
+    
     
 
     private void OnValidate () {
@@ -20,15 +22,20 @@ public class MultiLaserBlock : MonoBehaviour {
     }
 
     public void HitByLaser () {
-        foreach(GameObject laserPointer in firePositionObject) {
-            laserPointer.GetComponent<LaserPointer>().Activate();
+        foreach(GameObject gun in firePositionObject) {
+            GameObject newAttack = Instantiate(attackLaser);
+            Vector2 firePosition = gun.transform.position;
+            float fireAngle = gun.transform.eulerAngles.z;
+            float xFireVector = Mathf.Cos(fireAngle / 180f * Mathf.PI);
+            float yFireVector = Mathf.Sin(fireAngle / 180f * Mathf.PI);
+            Vector2 fireDirection = new Vector2(xFireVector, yFireVector);
+
+            newAttack.GetComponent<AttackLaser>().Attack(firePosition, fireDirection);
         }
     }
 
     public void Restart () {
-        foreach (GameObject laserPointer in firePositionObject) {
-            laserPointer.GetComponent<LaserPointer>().Deactivate();
-        }
+        
     }
 
 
