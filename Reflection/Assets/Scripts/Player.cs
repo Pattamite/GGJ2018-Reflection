@@ -7,10 +7,11 @@ public class Player : MonoBehaviour {
     public float rotateAddSpeed = 60f;
     public float minRotate = 10f;
     public float maxRotate = 170f;
+    private LaserPointer laserPointer;
 	
 	void Start () {
-		
-	}
+        laserPointer = GetComponent<LaserPointer>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -35,6 +36,7 @@ public class Player : MonoBehaviour {
     private void Attack () {
         if(Input.GetButtonDown("Fire1")) {
             print("Bang !!!");
+            laserPointer.Attack();
         }
     }
 }
