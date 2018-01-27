@@ -90,7 +90,7 @@ public class LaserPointer : MonoBehaviour {
                 foreach(BlockAdapter ba in GameObject.FindObjectsOfType<BlockAdapter>()) {
                     ba.NotHitbyLaser();
                 }
-                blockAdapter.HitByLaser();
+                if(isMainLaser) blockAdapter.HitByLaser();
             }
 
             AddPositionToLineRenderer(new Vector3(objectHitData.point.x, objectHitData.point.y));
