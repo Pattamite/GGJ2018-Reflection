@@ -11,7 +11,6 @@ public class LaserPointer : MonoBehaviour {
     public int maxReflectCount = 100;
     public bool isAlwaysActive = false;
     public bool isAlwaysActiveAfterHit = false;
-    private bool isAttacking = false;
 
     private bool isActive = false;
     private LineRenderer lineRenderer;
@@ -35,9 +34,8 @@ public class LaserPointer : MonoBehaviour {
         Vector2 fireDirection = new Vector2(xFireVector, yFireVector);
 
         if (isAlwaysActive || isActive) {
-            DrawLaser(firePosition, fireDirection);
+            DrawLaser(firePosition, fireDirection, false);
         }
-
     }
 
     public void Activate () {
@@ -49,7 +47,16 @@ public class LaserPointer : MonoBehaviour {
         ResetLineRenderer();
     }
 
-    private void DrawLaser (Vector2 firePosition, Vector2 fireDirection) {
+    public void Attack () {
+        Vector2 firePosition = firePositionObject.transform.position;
+        float fireAngle = firePositionObject.transform.eulerAngles.z;
+        float xFireVector = Mathf.Cos(fireAngle / 180f * Mathf.PI);
+        float yFireVector = Mathf.Sin(fireAngle / 180f * Mathf.PI);
+        Vector2 fireDirection = new Vector2(xFireVector, yFireVector);
+        DrawLaser(firePosition, fireDirection, true);
+    }
+
+    private void DrawLaser (Vector2 firePosition, Vector2 fireDirection, bool isAttack) {
         ResetLineRenderer();
         AddPositionToLineRenderer(firePosition);
         bool isLineEnd = false;
@@ -61,7 +68,9 @@ public class LaserPointer : MonoBehaviour {
         RaycastHit2D objectHitData = Physics2D.Raycast(currentPosition, currentDirection, lineLength, 1 << StaticVar.LAYER_BLOCK);
 
         while (objectHitData && lineRenderer.positionCount <= maxReflectCount) {
-            DetectEnemy(currentPosition, currentDirection, objectHitData.distance);
+            if (isAttack) {
+                DetectEnemy(currentPosition, currentDirection, objectHitData.distance);
+            }
             lastHitObject = objectHitData.collider.gameObject;
 
             BlockAdapter blockAdapter = lastHitObject.GetComponent<BlockAdapter>();
@@ -88,7 +97,9 @@ public class LaserPointer : MonoBehaviour {
         }
 
         if (!isLineEnd) {
-            DetectEnemy(currentPosition, currentDirection, lineLength);
+            if (isAttack) {
+                DetectEnemy(currentPosition, currentDirection, lineLength);
+            }
             AddPositionToLineRenderer(new Vector3(currentPosition.x + (currentDirection.x * lineLength),
                                        currentPosition.y + (currentDirection.y * lineLength),
                                        firePositionObject.transform.position.z));
