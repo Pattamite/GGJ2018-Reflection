@@ -6,10 +6,11 @@ using UnityEngine.Rendering;
 public class LaserPointer : MonoBehaviour {
 
     public GameObject firePositionObject;
-    public GameObject lastHitObject;
     public float lineLength;
     public int maxReflectCount = 100;
+    public bool isAlwaysActive = false;
 
+    private bool isActive = false;
     private LineRenderer lineRenderer;
     // Use this for initialization
     void Start () {
@@ -24,14 +25,24 @@ public class LaserPointer : MonoBehaviour {
         float yFireVector = Mathf.Sin(fireAngle / 180f * Mathf.PI);
         Vector2 fireDirection = new Vector2(xFireVector, yFireVector);
 
-        DrawLaser(firePosition, fireDirection);
+        if (isAlwaysActive || isActive) {
+            DrawLaser(firePosition, fireDirection);
+        }
+    }
+
+    public void Activate () {
+        isActive = true;
+    }
+
+    public void Deactivate () {
+        isActive = false;
     }
 
     private void DrawLaser (Vector2 firePosition, Vector2 fireDirection) {
-        ResetLineTenderer();
+        ResetLineRenderer();
         AddPositionToLineRenderer(firePosition);
         bool isLineEnd = false;
-        lastHitObject = null;
+        GameObject lastHitObject = null;
 
         Vector2 currentPosition = new Vector2(firePosition.x, firePosition.y);
         Vector2 currentDirection = new Vector2(fireDirection.x, fireDirection.y);
@@ -75,7 +86,7 @@ public class LaserPointer : MonoBehaviour {
         lineRenderer.SetPosition(lineRenderer.positionCount - 1, position);
     }
 
-    private void ResetLineTenderer () {
+    private void ResetLineRenderer () {
         lineRenderer.positionCount = 0;
     }
 
