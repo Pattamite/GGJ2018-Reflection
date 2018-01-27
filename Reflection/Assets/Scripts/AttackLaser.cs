@@ -1,90 +1,66 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
-[RequireComponent(typeof(LineRenderer))]
-public class LaserPointer : MonoBehaviour {
-
-    public GameObject AttackLaser;
-    public GameObject firePositionObject;
+public class AttackLaser : MonoBehaviour {
     public float lineLength = 100;
     public int maxReflectCount = 100;
-    public bool isAlwaysActive = false;
-    public bool isAlwaysActiveAfterHit = false;
     public Color normalColor;
+    public Color fireColor;
     public float normalSize = 0.05f;
+    public float fireSize = 0.10f;
     public float fireTime = 0.5f;
 
     private float lastFireTime = 0.0f;
-    private bool isFiring = false;
-
-
-    private bool isActive = false;
     private LineRenderer lineRenderer;
-
-    public LaserPointer (GameObject firePositionObject, LineRenderer lineRenderer) {
-        this.firePositionObject = firePositionObject;
-        this.lineRenderer = lineRenderer;
-    }
+    private Vector2 firePosition;
+    private Vector2 fireDirection;
+    private bool isFiring;
+    
 
     // Use this for initialization
-    void Start () {
+    void Awake () {
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.startColor = normalColor;
         lineRenderer.endColor = normalColor;
+        lineRenderer.startWidth = normalSize;
+        lineRenderer.endWidth = normalSize;
         Material whiteDiffuseMat = new Material(Shader.Find("Particles/Additive"));
         lineRenderer.material = whiteDiffuseMat;
+        isFiring = false;
     }
-	
-	// Update is called once per frame
-	void Update () {
-        Vector2 firePosition = firePositionObject.transform.position;
-        float fireAngle = firePositionObject.transform.eulerAngles.z;
-        float xFireVector = Mathf.Cos(fireAngle / 180f * Mathf.PI);
-        float yFireVector = Mathf.Sin(fireAngle / 180f * Mathf.PI);
-        Vector2 fireDirection = new Vector2(xFireVector, yFireVector);
 
-        if (isAlwaysActive || isActive) {
-            DrawLaser(firePosition, fireDirection, false);
+    // Update is called once per frame
+    void Update () {
+        updateLine();
+    }
+
+    public void updateLine () {
+        if (isFiring && Time.time - lastFireTime < fireTime) {
+            float timeRatio = (Time.time - lastFireTime) / fireTime;
+            Color currentColor = Color.Lerp(fireColor, normalColor, timeRatio);
+            lineRenderer.startColor = currentColor;
+            lineRenderer.endColor = currentColor;
+
+            float currentSize = Mathf.Lerp(fireSize, normalSize, timeRatio);
+            lineRenderer.startWidth = currentSize;
+            lineRenderer.endWidth = currentSize;
         }
-
-        updateAttack();
-    }
-
-    private void updateAttack () {
-        if (isFiring) {
-            if(Time.time - lastFireTime >= fireTime) {
-                isFiring = false;
-            }
-        }
-    }
-
-    public void Activate () {
-        isActive = true;
-    }
-
-    public void Deactivate () {
-        isActive = false;
-        ResetLineRenderer();
-    }
-
-    public void Attack () {
-        if (!isFiring) {
-            isFiring = true;
-            lastFireTime = Time.time;
-            Vector2 firePosition = firePositionObject.transform.position;
-            float fireAngle = firePositionObject.transform.eulerAngles.z;
-            float xFireVector = Mathf.Cos(fireAngle / 180f * Mathf.PI);
-            float yFireVector = Mathf.Sin(fireAngle / 180f * Mathf.PI);
-            Vector2 fireDirection = new Vector2(xFireVector, yFireVector);
-
-            GameObject newAttack = Instantiate(AttackLaser);
-            newAttack.GetComponent<AttackLaser>().Attack(firePosition, fireDirection);
+        else if (isFiring) {
+            Destroy(gameObject);
         }
     }
 
-    private void DrawLaser (Vector2 firePosition, Vector2 fireDirection, bool isAttack) {
+    public void Attack (Vector2 firePosition, Vector2 fireDirection) {
+        this.firePosition = firePosition;
+        this.fireDirection = fireDirection;
+        lastFireTime = Time.time;
+        DrawLaser();
+        isFiring = true;
+    }
+
+    private void DrawLaser () {
+        print(lineRenderer);
         ResetLineRenderer();
         AddPositionToLineRenderer(firePosition);
         bool isLineEnd = false;
@@ -96,10 +72,11 @@ public class LaserPointer : MonoBehaviour {
         RaycastHit2D objectHitData = Physics2D.Raycast(currentPosition, currentDirection, lineLength, 1 << StaticVar.LAYER_BLOCK);
 
         while (objectHitData && lineRenderer.positionCount <= maxReflectCount) {
+            DetectEnemy(currentPosition, currentDirection, objectHitData.distance, 1);
             lastHitObject = objectHitData.collider.gameObject;
 
             BlockAdapter blockAdapter = lastHitObject.GetComponent<BlockAdapter>();
-            if(blockAdapter) blockAdapter.HitByLaser();
+            if (blockAdapter) blockAdapter.HitByLaser();
 
             AddPositionToLineRenderer(new Vector3(objectHitData.point.x, objectHitData.point.y));
 
@@ -121,17 +98,38 @@ public class LaserPointer : MonoBehaviour {
         }
 
         if (!isLineEnd) {
+            DetectEnemy(currentPosition, currentDirection, lineLength, 1);
             AddPositionToLineRenderer(new Vector3(currentPosition.x + (currentDirection.x * lineLength),
                                        currentPosition.y + (currentDirection.y * lineLength)));
         }
     }
 
-    private void AddPositionToLineRenderer(Vector2 position) {
+    private void AddPositionToLineRenderer (Vector2 position) {
         lineRenderer.positionCount += 1;
-        lineRenderer.SetPosition(lineRenderer.positionCount - 1, new Vector3(position.x, position.y, -5));
+        lineRenderer.SetPosition(lineRenderer.positionCount - 1, new Vector3(position.x, position.y, -2));
     }
 
     private void ResetLineRenderer () {
         lineRenderer.positionCount = 0;
+    }
+
+    private void DetectEnemy (Vector2 position, Vector2 direction, float range, int damage) {
+        GameObject lastEnemyHit = null;
+        RaycastHit2D enemyHitData = Physics2D.Raycast(position, direction, range, 1 << StaticVar.LAYER_ENEMY);
+
+        while (enemyHitData) {
+            lastEnemyHit = enemyHitData.collider.gameObject;
+            print(lastEnemyHit.ToString());
+            range -= enemyHitData.distance;
+
+            lastEnemyHit.GetComponent<Collider2D>().enabled = false;
+            enemyHitData = Physics2D.Raycast(enemyHitData.point, direction, range, 1 << StaticVar.LAYER_ENEMY);
+            lastEnemyHit.GetComponent<Collider2D>().enabled = true;
+
+            Enemy enemy = lastEnemyHit.GetComponent<Enemy>();
+            if (enemy) {
+                enemy.GetHit(damage);
+            }
+        }
     }
 }

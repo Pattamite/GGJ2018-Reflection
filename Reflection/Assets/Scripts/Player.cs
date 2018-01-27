@@ -35,7 +35,6 @@ public class Player : MonoBehaviour {
 
     private void Attack () {
         if(Input.GetButtonDown("Fire1")) {
-            print("Bang !!!");
             laserPointer.Attack();
         }
     }
