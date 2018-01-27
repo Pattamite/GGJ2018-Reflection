@@ -70,12 +70,15 @@ public class AttackLaser : MonoBehaviour {
 
         RaycastHit2D objectHitData = Physics2D.Raycast(currentPosition, currentDirection, lineLength, 1 << StaticVar.LAYER_BLOCK);
 
-        while (objectHitData && lineRenderer.positionCount <= maxReflectCount) {
+        while (objectHitData && lineRenderer.positionCount <= maxReflectCount && !isLineEnd) {
             DetectEnemy(currentPosition, currentDirection, objectHitData.distance, 1);
             lastHitObject = objectHitData.collider.gameObject;
 
             BlockAdapter blockAdapter = lastHitObject.GetComponent<BlockAdapter>();
-            if (blockAdapter) blockAdapter.HitByLaser();
+            if (blockAdapter) {
+                print("attack");
+                blockAdapter.HitByAttack();
+            }
 
             AddPositionToLineRenderer(new Vector3(objectHitData.point.x, objectHitData.point.y));
 
@@ -91,9 +94,7 @@ public class AttackLaser : MonoBehaviour {
                 break;
             }
 
-            lastHitObject.GetComponent<Collider2D>().enabled = false;
-            objectHitData = Physics2D.Raycast(currentPosition, currentDirection, lineLength, 1 << StaticVar.LAYER_BLOCK);
-            lastHitObject.GetComponent<Collider2D>().enabled = true;
+            objectHitData = Physics2D.Raycast(currentPosition + objectHitData.normal * 0.01f, currentDirection, lineLength, 1 << StaticVar.LAYER_BLOCK);
         }
 
         if (!isLineEnd) {
