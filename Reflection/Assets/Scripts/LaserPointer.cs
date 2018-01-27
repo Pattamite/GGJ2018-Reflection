@@ -3,15 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+[RequireComponent(typeof(LineRenderer))]
 public class LaserPointer : MonoBehaviour {
 
     public GameObject firePositionObject;
-    public float lineLength;
+    public float lineLength = 100;
     public int maxReflectCount = 100;
     public bool isAlwaysActive = false;
+    public bool isAlwaysActiveAfterHit = false;
+    private bool isAttacking = false;
 
     private bool isActive = false;
     private LineRenderer lineRenderer;
+
+    public LaserPointer (GameObject firePositionObject, LineRenderer lineRenderer) {
+        this.firePositionObject = firePositionObject;
+        this.lineRenderer = lineRenderer;
+    }
+
     // Use this for initialization
     void Start () {
         lineRenderer = GetComponent<LineRenderer>();
@@ -20,7 +29,7 @@ public class LaserPointer : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         Vector2 firePosition = firePositionObject.transform.position;
-        float fireAngle = transform.eulerAngles.z;
+        float fireAngle = firePositionObject.transform.eulerAngles.z;
         float xFireVector = Mathf.Cos(fireAngle / 180f * Mathf.PI);
         float yFireVector = Mathf.Sin(fireAngle / 180f * Mathf.PI);
         Vector2 fireDirection = new Vector2(xFireVector, yFireVector);
@@ -28,6 +37,7 @@ public class LaserPointer : MonoBehaviour {
         if (isAlwaysActive || isActive) {
             DrawLaser(firePosition, fireDirection);
         }
+
     }
 
     public void Activate () {
@@ -36,6 +46,7 @@ public class LaserPointer : MonoBehaviour {
 
     public void Deactivate () {
         isActive = false;
+        ResetLineRenderer();
     }
 
     private void DrawLaser (Vector2 firePosition, Vector2 fireDirection) {
@@ -52,6 +63,9 @@ public class LaserPointer : MonoBehaviour {
         while (objectHitData && lineRenderer.positionCount <= maxReflectCount) {
             DetectEnemy(currentPosition, currentDirection, objectHitData.distance);
             lastHitObject = objectHitData.collider.gameObject;
+
+            BlockAdapter blockAdapter = lastHitObject.GetComponent<BlockAdapter>();
+            if(blockAdapter) blockAdapter.HitByLaser();
 
             AddPositionToLineRenderer(new Vector3(objectHitData.point.x, objectHitData.point.y,
                                    firePositionObject.transform.position.z));
