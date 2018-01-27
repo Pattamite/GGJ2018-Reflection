@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour {
 
 
     public int maxHP = 1;
+    public int attackDamage = 1;
     private int currentHP;
     private GameController gameController;
 
@@ -25,12 +26,16 @@ public class Enemy : MonoBehaviour {
         currentHP -= damage;
 
         if(currentHP <= 0) {
-            gameController.enemyCount--;
             Kill();
         }
     }
 
+    public bool IsAlive () {
+        return currentHP > 0;
+    }
+
     public void Kill () {
         Destroy(gameObject);
+        gameController.enemyCount--;
     }
 }

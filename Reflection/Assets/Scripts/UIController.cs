@@ -11,14 +11,17 @@ public class UIController : MonoBehaviour {
     public Color energyReadyColor;
     public Color energyNotReadyColor;
     public Image energySliderFillImage;
-    [Header("Others")]
+    [Header("Other Values")]
     public Text enemyCount;
+    [Header("Menu GameObject")]
+    public GameObject pauseMenu;
 
     private Player player;
     private GameController gameController;
+    
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         player = GameObject.FindObjectOfType<Player>();
         gameController = GameObject.FindObjectOfType<GameController>();
 
@@ -44,5 +47,18 @@ public class UIController : MonoBehaviour {
 
     private void UpdateOthersInfo () {
         enemyCount.text = gameController.enemyCount.ToString();
+    }
+
+    public void ActivateUI (string menuName) {
+        if(menuName == StaticVar.UI_MENU_PAUSE) {
+            pauseMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 0, -1);
+        }
+        
+    }
+
+    public void DeactivateUI (string menuName) {
+        if (menuName == StaticVar.UI_MENU_PAUSE) {
+            pauseMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -20, -1);
+        }
     }
 }

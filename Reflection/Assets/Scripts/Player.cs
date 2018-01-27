@@ -15,10 +15,11 @@ public class Player : MonoBehaviour {
     private LaserPointer laserPointer;
     private int currentHP;
     private float currentEnergy;
-    private
+    private GameController gameController;
 	
 	void Start () {
         laserPointer = GetComponent<LaserPointer>();
+        gameController = GameObject.FindObjectOfType<GameController>();
         currentHP = maxHP;
         currentEnergy = maxEnergy;
     }
@@ -33,7 +34,7 @@ public class Player : MonoBehaviour {
     public void GetHit(int damage) {
         currentHP -= damage;
         if(currentHP <= 0) {
-            //game over
+            gameController.GameOver();
         }
     }
 

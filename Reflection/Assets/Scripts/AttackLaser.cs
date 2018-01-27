@@ -76,7 +76,7 @@ public class AttackLaser : MonoBehaviour {
 
             BlockAdapter blockAdapter = lastHitObject.GetComponent<BlockAdapter>();
             if (blockAdapter) {
-                print("attack");
+                //print("attack");
                 blockAdapter.HitByAttack();
             }
 
