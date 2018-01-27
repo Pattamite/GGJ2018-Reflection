@@ -37,7 +37,7 @@ GameObject:
   - component: {fileID: 61959986223695400}
   m_Layer: 0
   m_Name: RightWall
-  m_TagString: ReflectiveObject
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 61693542744665698}
   m_Layer: 0
   m_Name: LeftWall
-  m_TagString: ReflectiveObject
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

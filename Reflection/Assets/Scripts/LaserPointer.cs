@@ -52,7 +52,7 @@ public class LaserPointer : MonoBehaviour {
         }
     }
 
-    public void Attack () {
+    public bool Attack () {
         if (!isFiring) {
             isFiring = true;
             lastFireTime = Time.time;
@@ -64,7 +64,9 @@ public class LaserPointer : MonoBehaviour {
 
             GameObject newAttack = Instantiate(attackLaser);
             newAttack.GetComponent<AttackLaser>().Attack(firePosition, fireDirection);
+            return true;
         }
+        else return false;
     }
 
     public void DrawLaser (Vector2 firePosition, Vector2 fireDirection) {
