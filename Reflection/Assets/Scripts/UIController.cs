@@ -17,6 +17,7 @@ public class UIController : MonoBehaviour {
     [Header("Menu GameObject")]
     public GameObject pauseMenu;
     public GameObject gameOverMenu;
+    public GameObject gameOverBackGround;
 
     private Player player;
     private GameController gameController;
@@ -60,6 +61,7 @@ public class UIController : MonoBehaviour {
         }
         else if (menuName == StaticVar.UI_MENU_GAMEOVER) {
             gameOverMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1.5f, 0, -10);
+            gameOverBackGround.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1.5f, 0, -10);
         }
 
     }
@@ -70,6 +72,7 @@ public class UIController : MonoBehaviour {
         }
         else if (menuName == StaticVar.UI_MENU_GAMEOVER) {
             gameOverMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1.5f, -20, -10);
+            gameOverBackGround.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1.5f, -20, -10);
         }
     }
 }

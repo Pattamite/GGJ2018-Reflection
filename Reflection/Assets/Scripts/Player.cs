@@ -16,10 +16,12 @@ public class Player : MonoBehaviour {
     private int currentHP;
     private float currentEnergy;
     private GameController gameController;
+    private AudioSource audioSource;
 	
 	void Start () {
         laserPointer = GetComponent<LaserPointer>();
         gameController = GameObject.FindObjectOfType<GameController>();
+        audioSource = GetComponent<AudioSource>();
         currentHP = maxHP;
         currentEnergy = maxEnergy;
     }
@@ -56,6 +58,7 @@ public class Player : MonoBehaviour {
         if(Input.GetButtonDown("Fire1") && currentEnergy >= energyPerUse && Time.timeScale != 0) {
             if (laserPointer.Attack()) {
                 currentEnergy -= energyPerUse;
+                audioSource.Play();
             }
         }
     }

@@ -129,6 +129,11 @@ public class AttackLaser : MonoBehaviour {
             if (enemy) {
                 enemy.GetHit(damage);
             }
+
+            Enemy_Boss boss = lastEnemyHit.GetComponent<Enemy_Boss>();
+            if (boss) {
+                boss.GetHit(damage);
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour {
     public float additionSpeedHorizontal = 0f;
     public float minHorizontal;
     public float maxHorizontal;
-    private float currentHorizontalDirection = 1f;
+    public float currentHorizontalDirection = 1f;
 
 
     void Start () {

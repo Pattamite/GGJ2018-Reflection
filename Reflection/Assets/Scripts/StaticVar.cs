@@ -12,4 +12,9 @@ public class StaticVar : MonoBehaviour {
     public static float ATTACK_DELAY = 0.5f;
     public static string UI_MENU_PAUSE = "PauseMenu";
     public static string UI_MENU_GAMEOVER = "GameOverMenu";
+    public static int STATE_GAME_PLAYING = 1;
+    public static int STATE_GAME_PAUSE = 2;
+    public static int STATE_GAME_OVER = 3;
+
+
 }
