@@ -46,7 +46,7 @@ public class Enemy_Boss : MonoBehaviour {
 
     private void CheckSpawn () {
         if(Time.time - lastSpawnTime > spawnTime) {
-            int randomEnemy = Random.Range(0, enemy.Length - 1);
+            int randomEnemy = Random.Range(0, enemy.Length);
             Instantiate(enemy[randomEnemy], new Vector3(Random.Range(spawnXMin, spawnXMax), spawnY, -4), Quaternion.identity, spawnParent);
 
             lastSpawnTime = Time.time;
@@ -68,6 +68,7 @@ public class Enemy_Boss : MonoBehaviour {
     public void Kill () {
         gameController.enemyCount--;
         Destroy(bossAvatar);
+        Destroy(slider);
         Destroy(gameObject);
         
     }
