@@ -56,20 +56,20 @@ public class UIController : MonoBehaviour {
 
     public void ActivateUI (string menuName) {
         if(menuName == StaticVar.UI_MENU_PAUSE) {
-            pauseMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 0, -10);
+            pauseMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1.5f, 0, -10);
         }
         else if (menuName == StaticVar.UI_MENU_GAMEOVER) {
-            gameOverMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 0, -10);
+            gameOverMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1.5f, 0, -10);
         }
 
     }
 
     public void DeactivateUI (string menuName) {
         if (menuName == StaticVar.UI_MENU_PAUSE) {
-            pauseMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -20, -10);
+            pauseMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1.5f, -20, -10);
         }
         else if (menuName == StaticVar.UI_MENU_GAMEOVER) {
-            gameOverMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -20, -10);
+            gameOverMenu.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1.5f, -20, -10);
         }
     }
 }
