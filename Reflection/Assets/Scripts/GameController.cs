@@ -7,6 +7,8 @@ public class GameController : MonoBehaviour {
 
     public int enemyCount = 0;
 
+    private float delay = 5f;
+
     UIController uiController;
 
     // Use this for initialization
@@ -18,7 +20,12 @@ public class GameController : MonoBehaviour {
     void Update () {
         if (!uiController.isMenu) {
             TogglePauseByKey();
-            CheckEnemyCount();
+            if(delay > 0) {
+                delay -= Time.deltaTime;
+            }
+            else {
+                CheckEnemyCount();
+            }
         }
     }
 
