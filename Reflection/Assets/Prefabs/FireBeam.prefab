@@ -54,10 +54,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineLength: 100
   maxReflectCount: 100
-  normalColor: {r: 1, g: 0, b: 0, a: 1}
-  fireColor: {r: 1, g: 0.5586207, b: 0, a: 1}
-  normalSize: 0.1
-  fireSize: 0.2
+  normalColor: {r: 0, g: 0.21379328, b: 1, a: 1}
+  fireColor: {r: 0, g: 0.8758622, b: 1, a: 1}
+  normalSize: 0.13
+  fireSize: 0.25
   fireTime: 0.2
 --- !u!120 &120772780055224938
 LineRenderer:
